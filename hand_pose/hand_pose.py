@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+"""
+@file    :   hand_pose.py
+@time    :   2020/01/15 14:45:02
+@author  :   XiaoY
+@version :   1.0
+@contact :   zhaoyin214@qq.com
+@license :   (c)copyright XiaoY
+@desc    :   hand pose
+"""
+
+__author__ = "XiaoY"
+
 import cv2
 import time
 import numpy as np
@@ -28,7 +42,6 @@ class HandPose(object):
             size=(input_width, self._input_height),
             mean=(0, 0, 0), swapRB=False, crop=False
         )
-
 
         t_net = time.time()
         self._net.setInput(input_blob)
