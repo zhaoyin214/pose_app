@@ -13,10 +13,13 @@
 __author__ = "XiaoY"
 
 
+#%%
 import cv2
 import time
 import numpy as np
 
+
+#%%
 class OpenPose(object):
     """
     openpose for localizing anatomical keypoints
@@ -72,6 +75,7 @@ class OpenPose(object):
         return self.predict(image)
 
 
+#%%
 def single_person_regressor(image, pretrained_model, threshold, output_path):
     """
     """
@@ -131,6 +135,9 @@ def single_person_regressor(image, pretrained_model, threshold, output_path):
         else:
             points.append(None)
 
+    # cv2.imshow("conf_resize", output[0, num_keypoints, :, :])
+    # cv2.waitKey(500)
+
     # skeleton
     for pair in pose_pairs:
         root = pair[0]
@@ -151,6 +158,31 @@ def single_person_regressor(image, pretrained_model, threshold, output_path):
 
     return image, points, elapsed_times
 
+
+#%%
+def get_keypoints(conf_map, threshold=0.1):
+
+    # smoothing
+    conf_map_smooth = cv2.GaussianBlur(
+        src=conf_map, ksize=(3, 3), sigmaX=0, sigmaY=0
+    )
+    map_mask = np.uint8(conf_map_smooth > threshold)
+
+    # find blobs
+    _, contours, _ = cv2.findContours(
+        image=map_mask, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_SIMPLE
+    )
+
+    # traverse blobs and find the maxima
+    keypoints = []
+    for cnt in contours:
+        blob_mask = np.zeros_like(map_mask)
+        blob_mask = cv2.fillConvexPoly(img=blob_mask, points=cnt, color=1)
+        conf_map_masked = conf_map_smooth * blob_mask
+        _, _, _, point = cv2.minMaxLoc(src=conf_map_masked)
+        print(point)
+        print(conf_map)
+        keypoints.append(point, )
 
 def multi_person_regressor(image, pretrained_model, threshold, output_path):
     """
